@@ -77,7 +77,7 @@ addons:
         - cmd[cp]: |-
             cd /root/owncast
             sed -i \
-            -e "s|DOMAIN=.*|DOMAIN=${settings.domain}" \
+            -e "s|DOMAIN=.*|DOMAIN=${settings.domain}|" \
             .env
             docker-compose up -d --force-recreate
     
