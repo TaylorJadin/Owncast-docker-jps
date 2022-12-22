@@ -50,4 +50,4 @@ success: |
   - **Password**: abc123
   - Change your password, and configure Owncast by visiting [https://${env.domain}/admin](https://${env.domain}/admin)   
   - You can map a custom domain by editing the file at `/root/owncast/.env` and pointing an A record at **${nodes.cp.extIPs}**
-  - After mapping a custom domain, stop and start the environment to issue automatically issue a Let's Encrypt certificate.
+  - After mapping a custom domain, stop and start the environment to automatically issue a Let's Encrypt certificate.
