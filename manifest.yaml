@@ -1,0 +1,53 @@
+type: install
+id: owncast-docker
+version: '1.0'
+appVersion: latest
+name: Owncast
+baseUrl: https://raw.githubusercontent.com/TaylorJadin/owncast-installer/main
+logo: /owncast.png
+homepage: https://owncast.online/
+
+categories: 
+- apps/education
+
+description: 
+  text: "Owncast is a free and open source live video and web chat server for use with existing popular broadcasting software."
+  short: Free, open-source decentralized live-streaming platform.
+
+nodes:
+  nodeType: dockerengine
+  nodeGroup: cp
+  cloudlets: 32
+  fixedcloudlets: 2
+  extip: true
+  displayName: Owncast server
+  volumes: ["/root/owncast"]
+
+onInstall:
+  - setup
+
+actions:
+  setup:      
+    - cmd[cp]: |-
+        mkdir -p /root/mastodon
+        cd /root/mastodon
+        wget https://raw.githubusercontent.com/TaylorJadin/owncast-installer/main/docker-compose.yml
+        wget https://raw.githubusercontent.com/TaylorJadin/owncast-installer/main/.env
+        sed -i \
+        -e "s|DOMAIN=|DOMAIN=${env.domain}|" \
+        -e "s|LETSENCRYPT_EMAIL=|LETSENCRYPT_EMAIL=${user.email}|" \
+        .env
+        docker-compose up -d
+    - env.file.AddFavorite:
+        nodeGroup: cp
+        path: /root/owncast
+        keyword: owncast
+
+success: | 
+  Owncast is ready!
+  - **Owncast URL**: [https://${env.domain}/](https://${env.domain}/)  
+  - **Username**: admin
+  - **Password**: abc123
+  - Change your password, and configure Owncast by visiting [https://${env.domain}/admin](https://${env.domain}/admin)   
+  - You can map a custom domain by editing the file at `/root/owncast/.env` and pointing an A record at **${nodes.cp.extIPs}**
+  - After mapping a custom domain, stop and start the environment to issue automatically issue a Let's Encrypt certificate.
