@@ -29,8 +29,8 @@ onInstall:
 actions:
   setup:      
     - cmd[cp]: |-
-        mkdir -p /root/mastodon
-        cd /root/mastodon
+        mkdir -p /root/owncast
+        cd /root/owncast
         wget https://raw.githubusercontent.com/TaylorJadin/owncast-installer/main/docker-compose.yml
         wget https://raw.githubusercontent.com/TaylorJadin/owncast-installer/main/.env
         sed -i \
