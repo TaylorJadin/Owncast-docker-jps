@@ -12,7 +12,7 @@ categories:
 
 description: 
   text: "Owncast is a free and open source live video and web chat server for use with existing popular broadcasting software."
-  short: Free, open-source live-streaming live video and web caht server.
+  short: Free, open-source live-streaming live video and web chat server.
 
 nodes:
   nodeType: dockerengine
