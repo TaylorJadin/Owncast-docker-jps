@@ -1,108 +1,108 @@
-  type: install
-  id: owncast-docker
-  version: '1.0'
-  appVersion: latest
-  name: Owncast
-  baseUrl: https://raw.githubusercontent.com/TaylorJadin/owncast-installer/main
-  logo: /owncast.png
-  homepage: https://owncast.online/
+type: install
+id: owncast-docker
+version: '1.0'
+appVersion: latest
+name: Owncast
+baseUrl: https://raw.githubusercontent.com/TaylorJadin/owncast-installer/main
+logo: /owncast.png
+homepage: https://owncast.online/
 
-  categories: 
-  - apps/education
+categories: 
+- apps/education
 
-  description: 
-    text: "Owncast is a free and open source live video and web chat server for use with existing popular broadcasting software."
-    short: Free, open-source live-streaming live video and web caht server.
+description: 
+  text: "Owncast is a free and open source live video and web chat server for use with existing popular broadcasting software."
+  short: Free, open-source live-streaming live video and web caht server.
 
-  nodes:
-    nodeType: dockerengine
-    nodeGroup: cp
-    cloudlets: 32
-    fixedcloudlets: 2
-    extip: true
-    displayName: Owncast server
-    addons: [change-domain, update-owncast]
-    volumes: ["/root/owncast"]
+nodes:
+  nodeType: dockerengine
+  nodeGroup: cp
+  cloudlets: 32
+  fixedcloudlets: 2
+  extip: true
+  displayName: Owncast server
+  addons: [change-domain, update-owncast]
+  volumes: ["/root/owncast"]
 
-  settings:
-    domain:
-      fields:
-        - name: displayfield
-          type: displayfield
-          hideLabel: true
-          markup: |
-            The new domain should already have an A record pointed at this environment's IP address.
-        - name: domain
-          hideLabel: true
-          caption: Domain
-          type: string
-          vtype: extdomain
+settings:
+  domain:
+    fields:
+      - name: displayfield
+        type: displayfield
+        hideLabel: true
+        markup: |
+          The new domain should already have an A record pointed at this environment's IP address.
+      - name: domain
+        hideLabel: true
+        caption: Domain
+        type: string
+        vtype: extdomain
 
-  onInstall:
-    - setup
+onInstall:
+  - setup
 
-  actions:
-    setup:      
-      - cmd[cp]: |-
-          mkdir -p /root/owncast
-          cd /root/owncast
-          wget https://raw.githubusercontent.com/TaylorJadin/owncast-installer/main/docker-compose.yml
-          wget https://raw.githubusercontent.com/TaylorJadin/owncast-installer/main/.env
-          sed -i \
-          -e "s|DOMAIN=|DOMAIN=${env.domain}|" \
-          -e "s|LETSENCRYPT_EMAIL=|LETSENCRYPT_EMAIL=${user.email}|" \
-          .env
-          docker-compose up -d
-      - env.file.AddFavorite:
-          nodeGroup: cp
-          path: /root/owncast
-          keyword: owncast
+actions:
+  setup:      
+    - cmd[cp]: |-
+        mkdir -p /root/owncast
+        cd /root/owncast
+        wget https://raw.githubusercontent.com/TaylorJadin/owncast-installer/main/docker-compose.yml
+        wget https://raw.githubusercontent.com/TaylorJadin/owncast-installer/main/.env
+        sed -i \
+        -e "s|DOMAIN=|DOMAIN=${env.domain}|" \
+        -e "s|LETSENCRYPT_EMAIL=|LETSENCRYPT_EMAIL=${user.email}|" \
+        .env
+        docker-compose up -d
+    - env.file.AddFavorite:
+        nodeGroup: cp
+        path: /root/owncast
+        keyword: owncast
 
-  addons:
-    - id: change-domain
-      name: Domain Configuration
-      description: Change the Domain name for Owncast and issue Let's Encrypt certificates.
-      permanent: true
-      buttons:
-        - confirmText: Are you sure you want to proceed?
-          loadingText: Changing domain...
-          action: changeDomain
-          caption: Change
-          successText: The domain has been updated successfully!
-          settings: domain
-          title: Please specify the new domain name
+addons:
+  - id: change-domain
+    name: Domain Configuration
+    description: Change the Domain name for Owncast and issue Let's Encrypt certificates.
+    permanent: true
+    buttons:
+      - confirmText: Are you sure you want to proceed?
+        loadingText: Changing domain...
+        action: changeDomain
+        caption: Change
+        successText: The domain has been updated successfully!
+        settings: domain
+        title: Please specify the new domain name
 
-      actions:
-        changeDomain:
-          - cmd[cp]: |-
-              cd /root/owncast
-              sed -i \
-              -e "s|DOMAIN=.*|DOMAIN=${settings.domain}" \
-              .env
-              docker-compose up -d --force-recreate
-      
-    - id: update-owncast
-      name: Update Owncast
-      description: Pull the latest version of the Owncast docker container
-      permanent: true
-      buttons:
-        - confirmText: Are you sure you want to proceed?
-          loadingText: Updating Owncast...
-          action: updateOwncast
-          caption: Update
-          successText: Your Owncast environment has been updated!
-          title: Update Owncast
-      actions:
-        updateOwncast:
-          -  cmd[cp]: |-
-              cd /root/owncast
-              docker-compose pull
-              docker-compose down
-              docker-compose up -d --force-recreate
+    actions:
+      changeDomain:
+        - cmd[cp]: |-
+            cd /root/owncast
+            sed -i \
+            -e "s|DOMAIN=.*|DOMAIN=${settings.domain}" \
+            .env
+            docker-compose up -d --force-recreate
+    
+  - id: update-owncast
+    name: Update Owncast
+    description: Pull the latest version of the Owncast docker container
+    permanent: true
+    buttons:
+      - confirmText: Are you sure you want to proceed?
+        loadingText: Updating Owncast...
+        action: updateOwncast
+        caption: Update
+        successText: Your Owncast environment has been updated!
+        title: Update Owncast
+    actions:
+      updateOwncast:
+        -  cmd[cp]: |-
+            cd /root/owncast
+            docker-compose pull
+            docker-compose down
+            docker-compose up -d --force-recreate
 
-  success: | 
-    **Owncast**: [https://${env.domain}/](https://${env.domain}/)
-    - **Username**: admin
-    - **Password**: abc123
-    - Change the default password and configure Owncast by visiting [https://${env.domain}/admin](https://${env.domain}/admin)   
-    - If you want to map a custom domain, point an A record at **${nodes.cp.extIPs}** then use the **Domain Configuration** Add-On to change the domain name and issue a new Let's Encrypt cert.
+success: | 
+  **Owncast**: [https://${env.domain}/](https://${env.domain}/)
+  - **Username**: admin
+  - **Password**: abc123
+  - Change the default password and configure Owncast by visiting [https://${env.domain}/admin](https://${env.domain}/admin)   
+  - If you want to map a custom domain, point an A record at **${nodes.cp.extIPs}** then use the **Domain Configuration** Add-On to change the domain name and issue a new Let's Encrypt cert.
