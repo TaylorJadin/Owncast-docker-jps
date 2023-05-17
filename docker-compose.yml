@@ -12,6 +12,7 @@ services:
     - VIRTUAL_HOST=${DOMAIN}
     - LETSENCRYPT_HOST=${DOMAIN}
     - LETSENCRYPT_EMAIL=${LETSENCRYPT_EMAIL}
+    restart: unless-stopped
 
   nginx-proxy:
     image: nginxproxy/nginx-proxy:alpine
