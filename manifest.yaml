@@ -17,7 +17,7 @@ description:
 nodes:
   nodeType: dockerengine
   nodeGroup: cp
-  cloudlets: 32
+  cloudlets: 16
   fixedcloudlets: 2
   extip: true
   displayName: Owncast server
